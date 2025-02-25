@@ -3,8 +3,6 @@ from backend.config import LocalDevelopmentConfig
 from flask_security import Security, SQLAlchemyUserDatastore
 from backend.models import db, User, Role
 from backend.create_initial_data import initialize_database
-import backend.routes
-
 
 def create_app():
     app = Flask(__name__)
@@ -18,6 +16,10 @@ def create_app():
         db.create_all()
     
     initialize_database(app, db)
+    
+    # Register routes
+    from backend.routes import register_routes
+    register_routes(app)
     
     return app
 
