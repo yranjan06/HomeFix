@@ -16,10 +16,29 @@ def initialize_database(app, db):
 
         # Create customer user if not exists
         if not userdatastore.find_user(email='customer@study.in'):
-            userdatastore.create_user(email='customer@study.in', password=hash_password('customerpass'), roles=['customer'])
+            userdatastore.create_user(
+                email='customer@study.in', 
+                password=hash_password('customerpass'), 
+                roles=['customer'],
+                full_name='Test Customer',
+                address='123 Customer St',
+                pincode='123456',
+                phone_number='1234567890'
+            )
 
         # Create service provider user if not exists
         if not userdatastore.find_user(email='serviceprovider@study.in'):
-            userdatastore.create_user(email='serviceprovider@study.in', password=hash_password('providerpass'), roles=['service_provider'])
+            userdatastore.create_user(
+                email='serviceprovider@study.in', 
+                password=hash_password('providerpass'), 
+                roles=['service_provider'],
+                full_name='Test Provider',
+                address='456 Provider Ave',
+                pincode='654321',
+                phone_number='9876543210',
+                service_type='plumbing',
+                years_of_experience=5,
+                base_price=50.0
+            )
 
         db.session.commit()
