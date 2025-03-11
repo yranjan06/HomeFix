@@ -5,7 +5,7 @@ from backend.models import db, User, Role
 from backend.create_initial_data import initialize_database
 
 def create_app():
-    app = Flask(__name__)
+    app = Flask(__name__, template_folder='frontend', static_folder='frontend', static_url_path='/static')
     app.config.from_object(LocalDevelopmentConfig)
     db.init_app(app)
 
