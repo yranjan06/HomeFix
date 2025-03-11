@@ -1,24 +1,25 @@
 const store = new Vuex.Store({
-    state : {
-        // like data in Vue instance
-        auth_token : null,
-        role : null,
-        loggedIn : false,
-        user_id : null,
-
+    state: {
+        auth_token: null,
+        role: null,
+        loggedIn: false,
+        user_id: null,
+        user: null
     },
-    mutations : {
-        // function that change state
-        setUser(state, user){
-            state.auth_token = user.token
-            state.role = user.role
-            state.loggedIn = true
-            state.user_id = user.id
+    mutations: {
+        setUser(state, user) {
+            state.auth_token = user.token;
+            state.role = user.role;
+            state.loggedIn = !!user.token;
+            state.user_id = user.id;
+            state.user = user;
         }
     },
-    actions : {
-        // action commit mutations can be async
+    getters: {
+        isLoggedIn: state => !!state.auth_token,
+        currentUser: state => state.user,
+        userRole: state => state.role
     }
-})
+});
 
-export default store
+export default store;

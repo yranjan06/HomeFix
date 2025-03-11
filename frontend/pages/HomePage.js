@@ -1,106 +1,36 @@
 export default {
     template: `
-    <div>
-        <!-- Hero Section -->
-        <div class="jumbotron jumbotron-fluid bg-primary text-white">
-            <div class="container text-center">
-                <h1 class="display-4">Welcome to HomeFix</h1>
-                <p class="lead">Your one-stop solution for all home service needs</p>
-                <hr class="my-4">
-                <p>Find trusted professionals for plumbing, electrical work, cleaning, and more!</p>
-                <div>
-                    <router-link to="/login" class="btn btn-light btn-lg mr-2">Customer Login</router-link>
-                    <router-link to="/register" class="btn btn-outline-light btn-lg">Join as Provider</router-link>
-                </div>
-            </div>
-        </div>
-
-        <!-- Services Section -->
-        <div class="container my-5">
-            <h2 class="text-center mb-4">Our Services</h2>
-            <div class="row">
-                <div v-for="service in featuredServices" :key="service.id" class="col-md-4 mb-4">
-                    <div class="card h-100">
-                        <div class="card-body text-center">
-                            <div class="service-icon mb-3" v-html="getServiceIcon(service.name)"></div>
-                            <h5 class="card-title">{{ service.name }}</h5>
-                            <p class="card-text">{{ service.description }}</p>
-                            <p class="text-primary font-weight-bold">Starting from ₹{{ service.base_price }}</p>
-                            <router-link :to="'/services/' + service.id" class="btn btn-primary">View Details</router-link>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="text-center mt-4">
-                <router-link to="/services" class="btn btn-outline-primary">View All Services</router-link>
-            </div>
-        </div>
-
-        <!-- How It Works Section -->
-        <div class="bg-light py-5">
-            <div class="container">
-                <h2 class="text-center mb-5">How It Works</h2>
-                <div class="row text-center">
-                    <div class="col-md-4 mb-4">
-                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 80px; height: 80px;">
-                            <h3>1</h3>
-                        </div>
-                        <h4>Choose a Service</h4>
-                        <p>Browse through our wide range of professional services</p>
-                    </div>
-                    <div class="col-md-4 mb-4">
-                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 80px; height: 80px;">
-                            <h3>2</h3>
-                        </div>
-                        <h4>Book an Appointment</h4>
-                        <p>Select a professional and schedule a convenient time</p>
-                    </div>
-                    <div class="col-md-4 mb-4">
-                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 80px; height: 80px;">
-                            <h3>3</h3>
-                        </div>
-                        <h4>Get the Job Done</h4>
-                        <p>Relax while our professionals handle your requirements</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Join as Provider Section -->
-        <div class="bg-dark text-white py-5">
-            <div class="container">
+    <div class="dark-theme">
+        <!-- Hero Section - Minimalist Dark -->
+        <div class="bg-gray-900 py-5">
+            <div class="container py-5">
                 <div class="row align-items-center">
-                    <div class="col-md-7">
-                        <h2>Join as a Service Provider</h2>
-                        <p class="lead">Are you skilled in home services? Join our platform and grow your business.</p>
-                        <ul class="list-unstyled mt-3">
-                            <li class="mb-2">✓ Get more customers</li>
-                            <li class="mb-2">✓ Flexible working hours</li>
-                            <li class="mb-2">✓ Easy payment collection</li>
-                        </ul>
-                        <router-link to="/register" class="btn btn-outline-light btn-lg mt-3">Register Now</router-link>
+                    <div class="col-lg-6 mb-5 mb-lg-0">
+                        <h1 class="display-4 fw-light mb-4 text-white">Home services, redefined.</h1>
+                        <p class="lead mb-4 text-gray-400">Connecting you with vetted professionals for all your home needs.</p>
+                        <div class="d-flex gap-3">
+                            <router-link to="/login" class="btn btn-outline-light rounded-0 px-4 py-2">Find Service</router-link>
+                            <router-link to="/register" class="btn btn-outline-light rounded-0 px-4 py-2">Become Provider</router-link>
+                        </div>
                     </div>
-                    <div class="col-md-5 text-center mt-4 mt-md-0">
-                        <div v-html="getProviderImage()"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Testimonials Section -->
-        <div class="container my-5">
-            <h2 class="text-center mb-4">What Our Customers Say</h2>
-            <div class="row">
-                <div v-for="(testimonial, index) in testimonials" :key="index" class="col-md-4 mb-4">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <p class="card-text font-italic">"{{ testimonial.comment }}"</p>
-                            <div class="d-flex align-items-center mt-3">
-                                <div class="font-weight-bold">{{ testimonial.name }}</div>
-                                <div class="ml-auto">
-                                    <span v-for="n in 5" :key="n" class="text-warning">
-                                        {{ n <= testimonial.rating ? '★' : '☆' }}
-                                    </span>
+                    <div class="col-lg-6">
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <div class="card bg-gray-800 p-4 h-100 border-0 rounded-0">
+                                    <div class="text-white fs-3 mb-2 fw-light">4.8</div>
+                                    <div class="text-gray-400">Customer Rating</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="card bg-gray-800 p-4 h-100 border-0 rounded-0">
+                                    <div class="text-white fs-3 mb-2 fw-light">10k+</div>
+                                    <div class="text-gray-400">Professionals</div>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="card bg-gray-800 p-4 border-0 rounded-0">
+                                    <div class="text-white fs-3 mb-2 fw-light">50k+</div>
+                                    <div class="text-gray-400">Completed Jobs</div>
                                 </div>
                             </div>
                         </div>
@@ -109,14 +39,103 @@ export default {
             </div>
         </div>
 
-        <!-- Call to Action -->
-        <div class="bg-primary text-white py-5">
-            <div class="container text-center">
-                <h2>Ready to get started?</h2>
-                <p class="lead">Join thousands of satisfied customers today</p>
-                <div>
-                    <router-link to="/login" class="btn btn-light btn-lg mr-3">Customer Login</router-link>
-                    <router-link to="/register" class="btn btn-outline-light btn-lg">Provider Registration</router-link>
+        <!-- Services Section - Minimalist Cards -->
+        <div class="bg-gray-800 py-5">
+            <div class="container">
+                <h2 class="text-center mb-5 fw-light text-white">Services</h2>
+                <div class="row g-4">
+                    <div v-for="service in featuredServices" :key="service.id" class="col-md-4">
+                        <div class="card h-100 bg-gray-900 border-0 rounded-0">
+                            <div class="card-body p-4">
+                                <div class="service-icon mb-4 text-center text-white" v-html="getServiceIcon(service.name)"></div>
+                                <h5 class="card-title mb-3 text-white fw-light text-center">{{ service.name }}</h5>
+                                <p class="card-text text-gray-400 mb-4 text-center">{{ service.description }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="text-white">₹{{ service.base_price }}</span>
+                                    <router-link :to="'/services/' + service.id" class="btn btn-sm btn-outline-light rounded-0">View</router-link>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- How It Works - Refined Steps -->
+        <div class="bg-gray-900 py-5">
+            <div class="container">
+                <h2 class="text-center mb-5 fw-light text-white">Process</h2>
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="card h-100 bg-gray-800 border-0 rounded-0">
+                            <div class="card-body p-4">
+                                <div class="text-white d-flex align-items-center justify-content-center mb-4 border border-white rounded-0" style="width: 50px; height: 50px;">
+                                    <span class="mb-0">01</span>
+                                </div>
+                                <h5 class="fw-light mb-3 text-white">Select</h5>
+                                <p class="text-gray-400">Browse our curated selection of premium services.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card h-100 bg-gray-800 border-0 rounded-0">
+                            <div class="card-body p-4">
+                                <div class="text-white d-flex align-items-center justify-content-center mb-4 border border-white rounded-0" style="width: 50px; height: 50px;">
+                                    <span class="mb-0">02</span>
+                                </div>
+                                <h5 class="fw-light mb-3 text-white">Schedule</h5>
+                                <p class="text-gray-400">Book a verified professional at your convenience.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card h-100 bg-gray-800 border-0 rounded-0">
+                            <div class="card-body p-4">
+                                <div class="text-white d-flex align-items-center justify-content-center mb-4 border border-white rounded-0" style="width: 50px; height: 50px;">
+                                    <span class="mb-0">03</span>
+                                </div>
+                                <h5 class="fw-light mb-3 text-white">Experience</h5>
+                                <p class="text-gray-400">Enjoy professional service with guaranteed quality.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Testimonials - Minimalist Cards -->
+        <div class="bg-gray-800 py-5">
+            <div class="container">
+                <h2 class="text-center mb-5 fw-light text-white">Testimonials</h2>
+                <div class="row g-4">
+                    <div v-for="(testimonial, index) in testimonials" :key="index" class="col-md-4">
+                        <div class="card h-100 bg-gray-900 border-0 rounded-0">
+                            <div class="card-body p-4">
+                                <div class="mb-3 text-white">
+                                    {{ "★".repeat(testimonial.rating) }}{{ "☆".repeat(5 - testimonial.rating) }}
+                                </div>
+                                <p class="card-text mb-4 text-gray-400 fst-italic">{{ testimonial.comment }}</p>
+                                <div class="d-flex align-items-center">
+                                    <div class="border border-white text-white rounded-0 d-flex align-items-center justify-content-center me-3" style="width: 30px; height: 30px;">
+                                        {{ testimonial.name.charAt(0) }}
+                                    </div>
+                                    <span class="fw-light text-white">{{ testimonial.name }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA Section - Minimalist Dark -->
+        <div class="bg-gray-900 py-5 text-center">
+            <div class="container py-4">
+                <h2 class="mb-4 fw-light text-white">Ready?</h2>
+                <p class="mb-4 text-gray-400">Join our community of satisfied clients</p>
+                <div class="d-flex justify-content-center gap-3">
+                    <router-link to="/login" class="btn btn-outline-light rounded-0 px-4 py-2">Log In</router-link>
+                    <router-link to="/register" class="btn btn-outline-light rounded-0 px-4 py-2">Register</router-link>
                 </div>
             </div>
         </div>
@@ -153,52 +172,34 @@ export default {
                 const response = await fetch('/services');
                 if (response.ok) {
                     const allServices = await response.json();
-                    // Take just the first 3 services for featuring on homepage
                     this.featuredServices = allServices.slice(0, 3);
                 }
             } catch (error) {
                 console.error('Error fetching services:', error);
             }
         },
-        // Fixed method to get service icons that works
         getServiceIcon(serviceName) {
             const serviceLower = serviceName.toLowerCase();
             
-            // Simple emoji icons instead of SVGs for better compatibility
             if (serviceLower.includes('plumb')) {
-                return '<div style="font-size: 48px; color: #007bff;">🔧</div>';
+                return '<div style="font-size: 40px;">🔧</div>';
             } else if (serviceLower.includes('electric')) {
-                return '<div style="font-size: 48px; color: #007bff;">⚡</div>';
+                return '<div style="font-size: 40px;">⚡</div>';
             } else if (serviceLower.includes('clean')) {
-                return '<div style="font-size: 48px; color: #007bff;">🧹</div>';
+                return '<div style="font-size: 40px;">🧹</div>';
             } else if (serviceLower.includes('cook')) {
-                return '<div style="font-size: 48px; color: #007bff;">👨‍🍳</div>';
+                return '<div style="font-size: 40px;">👨‍🍳</div>';
             } else if (serviceLower.includes('repair')) {
-                return '<div style="font-size: 48px; color: #007bff;">🔨</div>';
+                return '<div style="font-size: 40px;">🔨</div>';
             } else if (serviceLower.includes('laundry')) {
-                return '<div style="font-size: 48px; color: #007bff;">👕</div>';
+                return '<div style="font-size: 40px;">👕</div>';
             } else if (serviceLower.includes('emergency')) {
-                return '<div style="font-size: 48px; color: #007bff;">🚨</div>';
+                return '<div style="font-size: 40px;">🚨</div>';
             } else if (serviceLower.includes('premium')) {
-                return '<div style="font-size: 48px; color: #007bff;">✨</div>';
+                return '<div style="font-size: 40px;">✨</div>';
             } else {
-                // Default icon for any other service
-                return '<div style="font-size: 48px; color: #007bff;">🏠</div>';
+                return '<div style="font-size: 40px;">🏠</div>';
             }
-        },
-        // Provider image with SVG
-        getProviderImage() {
-            // Use emoji approach for better compatibility
-            return `
-            <div style="background-color: #343a40; border-radius: 8px; width: 300px; height: 200px; margin: 0 auto; position: relative; display: flex; flex-direction: column; justify-content: center; align-items: center; overflow: hidden;">
-                <div style="position: absolute; top: 20px; right: 20px; background-color: #28a745; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; font-size: 24px;">✓</div>
-                <div style="position: absolute; top: 20px; left: 20px; background-color: #007bff; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; font-size: 24px;">+</div>
-                <div style="font-size: 72px; margin-bottom: 10px;">👨‍🔧</div>
-                <div style="background-color: #007bff; color: white; padding: 8px 16px; border-radius: 4px; font-weight: bold; text-align: center;">Service Provider</div>
-            </div>
-            `;
         }
-        
-        
     }
 }
