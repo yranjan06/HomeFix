@@ -1,29 +1,16 @@
-const Home = {
-    template: `
-    <div>
-        <h1>Home</h1>
-    </div>
-    `
-}
-
-
+import HomePage from '../pages/HomePage.js';
 import LoginPage from '../pages/LoginPage.js';
 import RegisterPage from '../pages/RegisterPage.js';
 
-
-
-
-
 const routes = [
-    {path : '/', component : Home},
-    {path : '/login', component : LoginPage},
-    {path : '/register', component : RegisterPage},
-
-]
-
+    {path: '/', component: HomePage},
+    {path: '/login', component: LoginPage},
+    {path: '/register', component: RegisterPage},
+    // Other routes as needed
+];
 
 const router = new VueRouter({
     routes
 });
 
-export default router; 
+export default router;
