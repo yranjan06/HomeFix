@@ -1,3 +1,5 @@
+import os
+
 class Config():
     DEBUG = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
@@ -10,3 +12,9 @@ class LocalDevelopmentConfig(Config):
     SECRET_KEY = "shouldbekeyveryhidden"
     SECURITY_TOKEN_AUTHENTICATION_HEADER = 'Authentication-Token'
     WTF_CSRF_ENABLED = False
+    UPLOAD_FOLDER = 'uploads'
+
+
+
+
+    

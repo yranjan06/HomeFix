@@ -3,10 +3,15 @@ from backend.config import LocalDevelopmentConfig
 from flask_security import Security, SQLAlchemyUserDatastore
 from backend.models import db, User, Role
 from backend.create_initial_data import initialize_database
+import os
 
 def create_app():
     app = Flask(__name__, template_folder='frontend', static_folder='frontend', static_url_path='/static')
     app.config.from_object(LocalDevelopmentConfig)
+    
+    # Create uploads directory
+    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+    
     db.init_app(app)
 
     datastore = SQLAlchemyUserDatastore(db, User, Role)

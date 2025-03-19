@@ -3,11 +3,11 @@ export default {
     <div class="dark-theme">
         <!-- Hero Section - Minimalist Dark -->
         <div class="bg-gray-900 py-5">
-            <div class="container py-5">
+            <div class="container py-4">
                 <div class="row align-items-center">
-                    <div class="col-lg-6 mb-5 mb-lg-0">
-                        <h1 class="display-4 fw-light mb-4 text-white">Home services, redefined.</h1>
-                        <p class="lead mb-4 text-gray-400">Connecting you with vetted professionals for all your home needs.</p>
+                    <div class="col-lg-6 mb-4 mb-lg-0">
+                        <h1 class="display-4 fw-light mb-3 text-white">Home services, redefined.</h1>
+                        <p class="lead mb-3 text-gray-400">Connecting you with vetted professionals for all your home needs.</p>
                         <div class="d-flex gap-3">
                             <router-link to="/login" class="btn btn-outline-light rounded-0 px-4 py-2">Find Service</router-link>
                             <router-link to="/register" class="btn btn-outline-light rounded-0 px-4 py-2">Become Provider</router-link>
@@ -40,9 +40,14 @@ export default {
         </div>
 
         <!-- Services Section - Minimalist Cards -->
-        <div class="bg-gray-800 py-5">
+        <div class="bg-gray-800 py-4">
             <div class="container">
-                <h2 class="text-center mb-5 fw-light text-white">Services</h2>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="fw-light text-white mb-0">Services</h2>
+                    <router-link to="/services" class="text-white text-decoration-none">
+                        See more <i class="fas fa-arrow-right ms-2"></i>
+                    </router-link>
+                </div>
                 <div class="row g-4">
                     <div v-for="service in featuredServices" :key="service.id" class="col-md-4">
                         <div class="card h-100 bg-gray-900 border-0 rounded-0">
@@ -62,9 +67,11 @@ export default {
         </div>
 
         <!-- How It Works - Refined Steps -->
-        <div class="bg-gray-900 py-5">
+        <div class="bg-gray-900 py-4">
             <div class="container">
-                <h2 class="text-center mb-5 fw-light text-white">Process</h2>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="fw-light text-white mb-0">Process</h2>
+                </div>
                 <div class="row g-4">
                     <div class="col-md-4">
                         <div class="card h-100 bg-gray-800 border-0 rounded-0">
@@ -104,9 +111,14 @@ export default {
         </div>
 
         <!-- Testimonials - Minimalist Cards -->
-        <div class="bg-gray-800 py-5">
+        <div class="bg-gray-800 py-4">
             <div class="container">
-                <h2 class="text-center mb-5 fw-light text-white">Testimonials</h2>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="fw-light text-white mb-0">Testimonials</h2>
+                    <router-link to="/testimonials" class="text-white text-decoration-none">
+                        See more <i class="fas fa-arrow-right ms-2"></i>
+                    </router-link>
+                </div>
                 <div class="row g-4">
                     <div v-for="(testimonial, index) in testimonials" :key="index" class="col-md-4">
                         <div class="card h-100 bg-gray-900 border-0 rounded-0">
@@ -129,13 +141,26 @@ export default {
         </div>
 
         <!-- CTA Section - Minimalist Dark -->
-        <div class="bg-gray-900 py-5 text-center">
-            <div class="container py-4">
-                <h2 class="mb-4 fw-light text-white">Ready?</h2>
-                <p class="mb-4 text-gray-400">Join our community of satisfied clients</p>
-                <div class="d-flex justify-content-center gap-3">
-                    <router-link to="/login" class="btn btn-outline-light rounded-0 px-4 py-2">Log In</router-link>
-                    <router-link to="/register" class="btn btn-outline-light rounded-0 px-4 py-2">Register</router-link>
+        <div class="bg-gray-900 py-4 text-center">
+            <div class="container py-3">
+                <h2 class="mb-3 fw-light text-white">Connect With Us</h2>
+                <p class="mb-3 text-gray-400">Follow us on social media</p>
+                <div class="d-flex justify-content-center gap-4">
+                    <a href="#" class="text-white" aria-label="Facebook">
+                        <i class="fab fa-facebook-f fa-lg"></i>
+                    </a>
+                    <a href="#" class="text-white" aria-label="Twitter">
+                        <i class="fab fa-twitter fa-lg"></i>
+                    </a>
+                    <a href="#" class="text-white" aria-label="Instagram">
+                        <i class="fab fa-instagram fa-lg"></i>
+                    </a>
+                    <a href="#" class="text-white" aria-label="LinkedIn">
+                        <i class="fab fa-linkedin-in fa-lg"></i>
+                    </a>
+                    <a href="#" class="text-white" aria-label="YouTube">
+                        <i class="fab fa-youtube fa-lg"></i>
+                    </a>
                 </div>
             </div>
         </div>
@@ -182,23 +207,23 @@ export default {
             const serviceLower = serviceName.toLowerCase();
             
             if (serviceLower.includes('plumb')) {
-                return '<div style="font-size: 40px;">🔧</div>';
+                return '<div style="font-size: 40px; color: #f5f5f5;"><i class="fas fa-wrench"></i></div>';
             } else if (serviceLower.includes('electric')) {
-                return '<div style="font-size: 40px;">⚡</div>';
+                return '<div style="font-size: 40px; color: #f5f5f5;"><i class="fas fa-bolt"></i></div>';
             } else if (serviceLower.includes('clean')) {
-                return '<div style="font-size: 40px;">🧹</div>';
-            } else if (serviceLower.includes('cook')) {
-                return '<div style="font-size: 40px;">👨‍🍳</div>';
+                return '<div style="font-size: 40px; color: #f5f5f5;"><i class="fas fa-broom"></i></div>';
+            }  else if (serviceLower.includes('cook')) {
+                return '<div style="font-size: 40px; color: #f5f5f5;"><i class="fas fa-utensils"></i></div>';
             } else if (serviceLower.includes('repair')) {
-                return '<div style="font-size: 40px;">🔨</div>';
+                return '<div style="font-size: 40px; color: #f5f5f5;"><i class="fas fa-hammer"></i></div>';
             } else if (serviceLower.includes('laundry')) {
-                return '<div style="font-size: 40px;">👕</div>';
-            } else if (serviceLower.includes('emergency')) {
-                return '<div style="font-size: 40px;">🚨</div>';
+                return '<div style="font-size: 40px; color: #f5f5f5;"><i class="fas fa-tshirt"></i></div>';
+            }else if (serviceLower.includes('emergency')) {
+                return '<div style="font-size: 40px; color: #f5f5f5;"><i class="fas fa-exclamation-triangle"></i></div>';
             } else if (serviceLower.includes('premium')) {
-                return '<div style="font-size: 40px;">✨</div>';
+                return '<div style="font-size: 40px; color: #f5f5f5;"><i class="fas fa-star"></i></div>';
             } else {
-                return '<div style="font-size: 40px;">🏠</div>';
+                return '<div style="font-size: 40px; color: #f5f5f5;"><i class="fas fa-home"></i></div>';
             }
         }
     }

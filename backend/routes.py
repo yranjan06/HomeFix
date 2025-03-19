@@ -1,6 +1,8 @@
 from flask import request, jsonify, render_template, current_app
 from flask_security import auth_required, verify_password, hash_password, current_user
 from backend.models import db, User, Service, Professional, ServicePackage, ServiceRequest, Review
+from werkzeug.utils import secure_filename
+import os
 import datetime
 
 def register_routes(app):
@@ -108,20 +110,58 @@ def register_routes(app):
     def register_provider():
         """Register a new service provider user"""
         datastore = app.security.datastore
-        data = request.get_json()
         
-        # Extract provider data
-        email = data.get('email')
-        password = data.get('password')
-        username = data.get('username')
-        full_name = data.get('full_name')
-        address = data.get('address')
-        pincode = data.get('pincode')
-        phone_number = data.get('phone_number')
-        service_id = data.get('service_id')
-        experience_years = data.get('experience_years')
-        base_price = data.get('base_price')
-        document_proof = data.get('document_proof')
+        # Check content type and handle accordingly
+        if request.content_type and 'multipart/form-data' in request.content_type:
+            # Handle form data from multipart request
+            email = request.form.get('email')
+            password = request.form.get('password')
+            username = request.form.get('username')
+            full_name = request.form.get('full_name')
+            address = request.form.get('address')
+            pincode = request.form.get('pincode')
+            phone_number = request.form.get('phone_number')
+            service_id = request.form.get('service_id')
+            experience_years = request.form.get('experience_years')
+            base_price = request.form.get('base_price')
+            document_proof = request.form.get('document_proof')
+            
+            # Handle file upload
+            if 'document_file' in request.files:
+                file = request.files['document_file']
+                if file and file.filename:
+                    # Import secure_filename if not already imported
+                    from werkzeug.utils import secure_filename
+                    import os
+                    
+                    # Make sure you have UPLOAD_FOLDER defined in your app config
+                    if not hasattr(current_app.config, 'UPLOAD_FOLDER'):
+                        current_app.config['UPLOAD_FOLDER'] = 'uploads'
+                        os.makedirs(current_app.config['UPLOAD_FOLDER'], exist_ok=True)
+                    
+                    # Save the file to a secure location
+                    filename = secure_filename(file.filename)
+                    file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+                    file.save(file_path)
+                    # Set document_proof to the file path
+                    document_proof = file_path
+        else:
+            # Handle JSON data
+            data = request.get_json()
+            if not data:
+                return jsonify({'message': 'Invalid request data'}), 400
+            
+            email = data.get('email')
+            password = data.get('password')
+            username = data.get('username')
+            full_name = data.get('full_name')
+            address = data.get('address')
+            pincode = data.get('pincode')
+            phone_number = data.get('phone_number')
+            service_id = data.get('service_id')
+            experience_years = data.get('experience_years')
+            base_price = data.get('base_price')
+            document_proof = data.get('document_proof')
 
         # Validate required fields
         if not email or not password or not service_id:
@@ -151,7 +191,7 @@ def register_routes(app):
                 user_id=user.id,
                 service_id=service_id,
                 experience_years=experience_years,
-                base_price=base_price,
+                base_price=float(base_price) if base_price else 0.0,  # Handle possible string from form
                 document_proof=document_proof,
                 rating=0.0
             )

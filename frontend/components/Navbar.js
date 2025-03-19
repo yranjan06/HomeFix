@@ -2,8 +2,9 @@ export default {
     template: `
     <nav class="navbar navbar-expand-lg navbar-dark bg-gray-900 shadow-sm">
         <div class="container">
-            <router-link class="navbar-brand fw-light" to="/">
-                <span class="text-white">Home</span><span class="text-white">Fix</span>
+            <router-link class="navbar-brand fw-light d-flex align-items-center" to="/">
+                <i class="fas fa-home me-2"></i>
+                <span class="text-white">HomeFix</span>
             </router-link>
             <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
