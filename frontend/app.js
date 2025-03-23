@@ -12,6 +12,7 @@ const app = new Vue({
     `,
     components : {
         Navbar,
+
     },
     router,
     store,
