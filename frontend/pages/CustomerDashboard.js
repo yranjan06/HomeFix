@@ -1,18 +1,46 @@
 export default {
     template: `
-    <div class="container py-5">
-        <div class="card border-0 shadow-sm">
-            <div class="card-body p-4">
-                <h2 class="mb-4 fw-bold">Customer Dashboard</h2>
-                <p>Welcome, Customer. You are successfully logged in.</p>
-                <div class="alert alert-dark">
-                    <div class="d-flex align-items-center">
-                        <div class="me-3">ℹ️</div>
-                        <div>You can browse services, book appointments, and manage your requests here.</div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="dashboard container py-4">
+        <welcome-header :username="username" />
+        
+        <service-category-grid />
+        
+        <promotion-banner 
+            promotionText="Get our Platinum plan"
+            iconSrc="/img/platinum-icon.png"
+        />
+        
+        <service-history-table />
     </div>
-    `
+    `,
+    components: {
+        'welcome-header': () => import('./welcomeHeader.js'),
+        'service-category-grid': () => import('./serviceCategoryGrid.js'),
+        'promotion-banner': () => import('./promotionBanner.js'),
+        'service-history-table': () => import('./serviceHistoryTable.js')
+    },
+    data() {
+        return {
+            username: '',
+            userData: {}
+        }
+    },
+    mounted() {
+        this.fetchUserData();
+    },
+    methods: {
+        async fetchUserData() {
+            try {
+                const response = await fetch('/api/user/profile');
+                if (response.ok) {
+                    this.userData = await response.json();
+                    this.username = this.userData.username || this.userData.full_name || 'User';
+                } else {
+                    console.error('Failed to fetch user data');
+                }
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+            }
+        }
+    }
 }
