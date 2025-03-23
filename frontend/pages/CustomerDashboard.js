@@ -1,3 +1,7 @@
+import welcomeHeader from '../components/customer_component/welcomeHeader.js';
+import serviceCategoryGrid from '../components/customer_component/serviceCategoryGrid.js';
+import serviceHistoryTable from '../components/customer_component/serviceHistoryTable.js';
+
 export default {
     template: `
     <div class="dashboard container py-4">
@@ -5,25 +9,19 @@ export default {
         
         <service-category-grid />
         
-        <promotion-banner 
-            promotionText="Get our Platinum plan"
-            iconSrc="/img/platinum-icon.png"
-        />
-        
         <service-history-table />
     </div>
     `,
     components: {
-        'welcome-header': () => import('./welcomeHeader.js'),
-        'service-category-grid': () => import('./serviceCategoryGrid.js'),
-        'promotion-banner': () => import('./promotionBanner.js'),
-        'service-history-table': () => import('./serviceHistoryTable.js')
+        'welcome-header': welcomeHeader,
+        'service-category-grid': serviceCategoryGrid,
+        'service-history-table': serviceHistoryTable
     },
     data() {
         return {
             username: '',
             userData: {}
-        }
+        };
     },
     mounted() {
         this.fetchUserData();
@@ -43,4 +41,4 @@ export default {
             }
         }
     }
-}
+};
