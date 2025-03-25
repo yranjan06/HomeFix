@@ -4,7 +4,7 @@ export default {
     props: ['username'],
     template: `
     <div class="customer-welcome-card mt-4 ms-4 d-inline-block p-3 bg-dark border border-secondary rounded">
-        <h3 class="text-white mb-0">Welcome, {{ displayUsername }}</h3>
+        <h3 class="text-white mb-0">Welcome, {{ displayUsername }} !</h3>
     </div>
     `,
     computed: {
