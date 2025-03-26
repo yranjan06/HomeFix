@@ -1,49 +1,3 @@
-// import { ref, onMounted } from 'vue';
-// import { useRoute } from 'vue-router';
-// import ServiceDetails from '../components/ServiceDetails';
-
-// export default {
-//   name: 'ServicePage',
-//   components: {
-//     ServiceDetails
-//   },
-//   setup() {
-//     const route = useRoute();
-//     const service = ref(null);
-
-//     const fetchServiceDetails = async (serviceId) => {
-//       // Simulated API call
-//       service.value = {
-//         id: serviceId,
-//         name: 'Plumbing',
-//         items: [
-//           { id: 'P1', name: 'Pipe Repair', description: 'Fix leaky pipes', price: 500, provider: 'John Doe', rating: 4.5, reviews: 120 },
-//           { id: 'P2', name: 'Sink Installation', description: 'Install new sink', price: 1000, provider: 'Jane Smith', rating: 4.8, reviews: 95 },
-//           // Add more service items as needed
-//         ]
-//       };
-//     };
-
-//     onMounted(() => {
-//       const serviceId = route.params.id;
-//       fetchServiceDetails(serviceId);
-//     });
-
-//     return {
-//       service
-//     };
-//   },
-//   template: `
-//     <div class="container mx-auto px-4 py-8">
-//       <h1 class="text-3xl font-bold mb-8">{{ service?.name }} Services</h1>
-//       <ServiceDetails :service="service" />
-//     </div>
-//   `
-// };
-
-
-
-
 import ServiceDetails from '../components/Customer_Components/ServiceDetails.js';
 
 export default {
@@ -115,7 +69,14 @@ export default {
       <div v-else>
         <div class="mb-4">
           <router-link to="/customer-dashboard" class="text-light">
-            <i class="fas fa-arrow-left me-2"></i> Back to Services
+            <div class="back-link-box d-inline-block p-2 bg-dark border border-secondary rounded">
+              <a href="/customer-dashboard" class="text-light text-decoration-none">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left me-2" viewBox="0 0 16 16">
+                  <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+                </svg>
+                Back to Home
+              </a>
+            </div>
           </router-link>
         </div>
         

@@ -137,14 +137,15 @@ export default {
     this.fetchAppointments();
   },
   template: `
-    <div class="mt-16">
-      <h2 class="text-2xl font-medium mb-6 text-white">Service History</h2>
-      
-      <div v-if="loading" class="text-center py-5">
+    <div class="container mt-4">
+      <div class="customer-welcome-card mt-4 ms-4 d-inline-block p-3 bg-dark border border-secondary rounded">
+      <h3 class="text-white mb-0">Service Booking</h3>
+    </div>    
+      <div v-if="loading" class="text-center py-7">
         <div class="spinner-border text-light" role="status">
           <span class="visually-hidden">Loading...</span>
         </div>
-        <p class="mt-2 text-white">Loading service history...</p>
+        <p class="mt-2 text-light">Loading service history...</p>
       </div>
       
       <div v-else-if="error" class="alert alert-danger" role="alert">
@@ -152,199 +153,198 @@ export default {
       </div>
       
       <div v-else-if="appointments.length === 0" class="text-center py-5">
-        <p class="text-white">No service history found. Book a service to see it here!</p>
+        <p class="text-light">No service history found. Book a service to see it here!</p>
       </div>
       
-      <div v-else class="rounded-xl overflow-hidden shadow-sm bg-dark">
-        <div class="overflow-x-auto">
-          <table class="w-full">
-            <thead>
-              <tr class="bg-primary text-white">
-                <th class="py-4 px-6 text-left font-normal">ID</th>
-                <th class="py-4 px-6 text-left font-normal">Service</th>
-                <th class="py-4 px-6 text-left font-normal">Professional</th>
-                <th class="py-4 px-6 text-left font-normal">Booking</th>
-                <th class="py-4 px-6 text-left font-normal">Completion</th>
-                <th class="py-4 px-6 text-left font-normal">Phone</th>
-                <th class="py-4 px-6 text-left font-normal">Status</th>
-                <th class="py-4 px-6 text-left font-normal">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr 
-                v-for="appointment in appointments" 
-                :key="appointment.id"
-                class="border-b border-secondary last:border-0 hover:bg-secondary/30 transition-colors"
-              >
-                <td class="py-4 px-6 text-white">{{ appointment.id }}</td>
-                <td class="py-4 px-6 text-white">{{ appointment.service }}</td>
-                <td class="py-4 px-6 text-white">{{ appointment.professional }}</td>
-                <td class="py-4 px-6 text-white">{{ appointment.bookingDate }}</td>
-                <td class="py-4 px-6 text-white">{{ appointment.completionDate || "Pending" }}</td>
-                <td class="py-4 px-6 text-white">{{ appointment.phone }}</td>
-                <td class="py-4 px-6">
-                  <span :class="[
-                    'inline-block px-3 py-1 rounded-full text-xs font-medium',
-                    appointment.status === 'Completed' ? 'bg-green-100 text-green-800' : 
-                    appointment.status === 'Requested' ? 'bg-blue-100 text-blue-800' : 
-                    'bg-yellow-100 text-yellow-800'
-                  ]">
-                    {{ appointment.status }}
-                  </span>
-                </td>
-                <td class="py-4 px-6">
-                  <div class="flex space-x-2">
-                    <button 
-                      class="px-3 py-1 text-sm border rounded-md hover:bg-gray-100 hover:text-dark"
-                      @click="handleViewDetails(appointment)"
-                    >
-                      View
-                    </button>
-                    <button 
-                      class="px-3 py-1 text-sm border rounded-md hover:bg-gray-100 hover:text-dark"
-                      @click="handleViewRemarks(appointment)"
-                      :disabled="appointment.status !== 'Completed'"
-                      :class="appointment.status !== 'Completed' ? 'opacity-50 cursor-not-allowed' : ''"
-                    >
-                      Remarks
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+      <div v-else class="table-responsive">
+        <table class="table table-dark table-hover">
+          <thead class="bg-primary text-white">
+            <tr>
+              <th class="py-3">ID</th>
+              <th class="py-3">Service</th>
+              <th class="py-3">Professional</th>
+              <th class="py-3">Booking</th>
+              <th class="py-3">Completion</th>
+              <th class="py-3">Phone</th>
+              <th class="py-3">Status</th>
+              <th class="py-3">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="appointment in appointments" :key="appointment.id">
+              <td>{{ appointment.id }}</td>
+              <td>{{ appointment.service }}</td>
+              <td>{{ appointment.professional }}</td>
+              <td>{{ appointment.bookingDate }}</td>
+              <td>{{ appointment.completionDate || "Pending" }}</td>
+              <td>{{ appointment.phone }}</td>
+              <td>
+                <span :class="[
+                  'badge',
+                  appointment.status === 'Completed' ? 'bg-success' : 
+                  appointment.status === 'Requested' ? 'bg-primary' : 
+                  'bg-warning text-dark'
+                ]">
+                  {{ appointment.status }}
+                </span>
+              </td>
+              <td>
+                <button class="btn btn-sm btn-outline-light me-2" @click="handleViewDetails(appointment)">
+                  View
+                </button>
+                <button 
+                  class="btn btn-sm btn-outline-light"
+                  @click="handleViewRemarks(appointment)"
+                  :disabled="appointment.status !== 'Completed'"
+                >
+                  Remarks
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-  
+
       <!-- Details Modal -->
-      <div v-if="open" class="fixed inset-0 z-50 flex items-center justify-center">
-        <div class="absolute inset-0 bg-black bg-opacity-80" @click="open = false"></div>
-        <div class="relative bg-white rounded-lg max-w-md w-full mx-4 p-6">
-          <h3 class="text-lg font-medium mb-1">Appointment Details</h3>
-          <p class="text-sm text-gray-500 mb-4">
-            {{ selectedAppointment?.service }} service on {{ selectedAppointment?.bookingDate }}
-          </p>
-          
-          <div v-if="selectedAppointment" class="space-y-4 py-2">
-            <div class="flex justify-between">
-              <span class="text-gray-500">ID:</span>
-              <span class="font-medium">{{ selectedAppointment.id }}</span>
+      <div v-if="open" class="modal fade show d-block" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content bg-dark text-light">
+            <div class="modal-header border-secondary">
+              <h5 class="modal-title">Appointment Details</h5>
+              <button type="button" class="btn-close btn-close-white" @click="open = false"></button>
             </div>
-            <div class="flex justify-between">
-              <span class="text-gray-500">Package:</span>
-              <span class="font-medium">{{ selectedAppointment.package }}</span>
+            <div class="modal-body" v-if="selectedAppointment">
+              <div class="mb-3 d-flex justify-content-between">
+                <span class="text-secondary">ID:</span>
+                <span>{{ selectedAppointment.id }}</span>
+              </div>
+              <div class="mb-3 d-flex justify-content-between">
+                <span class="text-secondary">Package:</span>
+                <span>{{ selectedAppointment.package }}</span>
+              </div>
+              <div class="mb-3 d-flex justify-content-between">
+                <span class="text-secondary">Professional:</span>
+                <span>{{ selectedAppointment.professional }}</span>
+              </div>
+              <div class="mb-3 d-flex justify-content-between">
+                <span class="text-secondary">Status:</span>
+                <span :class="[
+                  selectedAppointment.status === 'Completed' ? 'text-success' : 
+                  selectedAppointment.status === 'Requested' ? 'text-primary' : 
+                  'text-warning'
+                ]">
+                  {{ selectedAppointment.status }}
+                </span>
+              </div>
+              <div class="mb-3 d-flex justify-content-between">
+                <span class="text-secondary">Price:</span>
+                <span>₹{{ selectedAppointment.price }}</span>
+              </div>
+              <div class="mb-3 d-flex justify-content-between">
+                <span class="text-secondary">Phone:</span>
+                <span>{{ selectedAppointment.phone }}</span>
+              </div>
+              <div v-if="selectedAppointment.remarks" class="mb-3">
+                <span class="text-secondary d-block mb-1">Remarks:</span>
+                <span>{{ selectedAppointment.remarks }}</span>
+              </div>
             </div>
-            <div class="flex justify-between">
-              <span class="text-gray-500">Professional:</span>
-              <span class="font-medium">{{ selectedAppointment.professional }}</span>
+            <div class="modal-footer border-secondary">
+              <button 
+                v-if="selectedAppointment?.status === 'Requested'"
+                class="btn btn-primary"
+                @click="rescheduleAppointment"
+              >
+                Reschedule
+              </button>
+              <button class="btn btn-secondary" @click="open = false">Close</button>
             </div>
-            <div class="flex justify-between">
-              <span class="text-gray-500">Status:</span>
-              <span :class="[
-                'font-medium',
-                selectedAppointment.status === 'Completed' ? 'text-green-600' : 
-                selectedAppointment.status === 'Requested' ? 'text-blue-600' : 
-                'text-yellow-600'
-              ]">
-                {{ selectedAppointment.status }}
-              </span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-gray-500">Price:</span>
-              <span class="font-medium">₹{{ selectedAppointment.price }}</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-gray-500">Phone:</span>
-              <span class="font-medium">{{ selectedAppointment.phone }}</span>
-            </div>
-            <div v-if="selectedAppointment.remarks" class="flex flex-col">
-              <span class="text-gray-500">Remarks:</span>
-              <span class="font-medium mt-1">{{ selectedAppointment.remarks }}</span>
-            </div>
-            <button 
-              v-if="selectedAppointment.status === 'Requested'"
-              class="w-full bg-primary text-white py-2 rounded-md mt-4"
-              @click="rescheduleAppointment"
-            >
-              Reschedule
-            </button>
-            
-            <button 
-              class="w-full text-center text-gray-500 font-medium text-sm py-2 mt-2"
-              @click="open = false"
-            >
-              Close
-            </button>
           </div>
         </div>
+        <div class="modal-backdrop fade show"></div>
       </div>
-  
+
       <!-- Remarks Modal -->
-      <div v-if="remarksOpen" class="fixed inset-0 z-50 flex items-center justify-center">
-        <div class="absolute inset-0 bg-black bg-opacity-80" @click="remarksOpen = false"></div>
-        <div class="relative bg-white rounded-lg max-w-[550px] w-full mx-4 p-6">
-          <h3 class="text-xl text-blue-600 text-center mb-1">Service Remarks</h3>
-          <p class="text-sm text-gray-500 text-center mb-4">
-            Request ID: {{ selectedAppointment?.id }}
-          </p>
-  
-          <div class="grid grid-cols-3 gap-4">
-            <div class="border border-pink-200 bg-pink-50 p-4 flex items-center justify-center rounded-lg">
-              <p class="text-center text-gray-800">{{ selectedAppointment?.service }}</p>
+      <div v-if="remarksOpen" class="modal fade show d-block" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content bg-dark text-light">
+            <div class="modal-header border-secondary">
+              <h5 class="modal-title text-primary">Service Remarks</h5>
+              <button type="button" class="btn-close btn-close-white" @click="remarksOpen = false"></button>
             </div>
-            <div class="border border-pink-200 bg-pink-50 p-4 flex items-center justify-center rounded-lg">
-              <p class="text-center text-gray-800">{{ selectedAppointment?.package }}</p>
+            <div class="modal-body">
+              <p class="text-secondary text-center mb-4">
+                Request ID: {{ selectedAppointment?.id }}
+              </p>
+              
+              <div class="row mb-4">
+                <div class="col-4">
+                  <div class="p-3 bg-secondary bg-opacity-25 rounded text-center">
+                    {{ selectedAppointment?.service }}
+                  </div>
+                </div>
+                <div class="col-4">
+                  <div class="p-3 bg-secondary bg-opacity-25 rounded text-center">
+                    {{ selectedAppointment?.package }}
+                  </div>
+                </div>
+                <div class="col-4">
+                  <div class="p-3 bg-secondary bg-opacity-25 rounded text-center">
+                    {{ selectedAppointment?.bookingDate }}
+                  </div>
+                </div>
+              </div>
+              
+              <div class="row mb-4">
+                <div class="col-4">
+                  <div class="p-3 bg-secondary bg-opacity-25 rounded text-center">
+                    Professional
+                  </div>
+                </div>
+                <div class="col-4">
+                  <div class="p-3 bg-secondary bg-opacity-25 rounded text-center">
+                    {{ selectedAppointment?.professional }}
+                  </div>
+                </div>
+                <div class="col-4">
+                  <div class="p-3 bg-secondary bg-opacity-25 rounded text-center">
+                    {{ selectedAppointment?.phone }}
+                  </div>
+                </div>
+              </div>
+              
+              <div class="text-center mb-3">
+                <label class="form-label">Service rating:</label>
+                <div class="d-flex justify-content-center">
+                  <span 
+                    v-for="i in 5" 
+                    :key="i" 
+                    @click="setRating(i)"
+                    :class="[
+                      'fs-3 cursor-pointer mx-1',
+                      i <= rating ? 'text-warning' : 'text-secondary'
+                    ]"
+                  >★</span>
+                </div>
+              </div>
+              
+              <div class="mb-3">
+                <label class="form-label">Remarks (if any):</label>
+                <textarea 
+                  v-model="remarks"
+                  class="form-control bg-dark text-light"
+                  placeholder="Enter your remarks about the service..."
+                  rows="4"
+                ></textarea>
+              </div>
             </div>
-            <div class="border border-pink-200 bg-pink-50 p-4 flex items-center justify-center rounded-lg">
-              <p class="text-center text-gray-800">{{ selectedAppointment?.bookingDate }}</p>
+            <div class="modal-footer border-secondary">
+              <button @click="onSubmitRemarks" class="btn btn-primary">Submit</button>
+              <button @click="remarksOpen = false" class="btn btn-secondary">Cancel</button>
             </div>
-          </div>
-  
-          <div class="grid grid-cols-3 gap-4 mt-4">
-            <div class="border border-pink-200 bg-pink-50 p-4 flex items-center justify-center rounded-lg">
-              <p class="text-center text-gray-800">Professional</p>
-            </div>
-            <div class="border border-pink-200 bg-pink-50 p-4 flex items-center justify-center rounded-lg">
-              <p class="text-center text-gray-800">{{ selectedAppointment?.professional }}</p>
-            </div>
-            <div class="border border-pink-200 bg-pink-50 p-4 flex items-center justify-center rounded-lg">
-              <p class="text-center text-gray-800">{{ selectedAppointment?.phone }}</p>
-            </div>
-          </div>
-  
-          <div class="flex flex-col items-center space-y-2 mt-6">
-            <label class="font-medium text-gray-700">Service rating:</label>
-            <div class="flex space-x-1">
-              <span 
-                v-for="i in 5" 
-                :key="i" 
-                @click="setRating(i)"
-                :class="[
-                  'cursor-pointer text-2xl',
-                  i <= rating ? 'text-red-500' : 'text-gray-300'
-                ]"
-              >★</span>
-            </div>
-          </div>
-  
-          <div class="mt-4">
-            <label class="font-medium text-gray-700 block mb-2">Remarks (if any):</label>
-            <textarea 
-              v-model="remarks"
-              placeholder="Enter your remarks about the service..." 
-              class="w-full border-2 border-gray-300 rounded-md p-2 h-24 resize-none"
-            ></textarea>
-          </div>
-  
-          <div class="flex justify-center space-x-6 mt-6">
-            <button @click="onSubmitRemarks" class="px-10 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md">
-              Submit
-            </button>
-            <button @click="remarksOpen = false" class="px-10 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md">
-              Cancel
-            </button>
           </div>
         </div>
+        <div class="modal-backdrop fade show"></div>
       </div>
     </div>
   `
