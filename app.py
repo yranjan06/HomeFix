@@ -8,6 +8,11 @@ import os
 def create_app():
     app = Flask(__name__, template_folder='frontend', static_folder='frontend', static_url_path='/static')
     app.config.from_object(LocalDevelopmentConfig)
+     
+     
+    app.config['SECURITY_LOGIN_URL'] = '/login'
+    app.config['SECURITY_URL_PREFIX'] = None
+
     
     # Create uploads directory
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)

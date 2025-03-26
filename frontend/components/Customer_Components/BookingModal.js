@@ -1,5 +1,3 @@
-import { format } from 'date-fns';
-
 export default {
   name: 'BookingModal',
   props: {
@@ -9,122 +7,165 @@ export default {
   },
   data() {
     return {
-      date: new Date(),
+      date: new Date().toISOString().split('T')[0],
       time: '19:00',
       phone: '',
-      today: format(new Date(), 'yyyy-MM-dd')
+      today: new Date().toISOString().split('T')[0],
+      alertMessage: '',
+      alertType: '',
+      showAlert: false,
+      loading: false
     }
   },
   methods: {
-    handleConfirm() {
+    showNotification(message, type) {
+      this.alertMessage = message;
+      this.alertType = type;
+      this.showAlert = true;
+      
+      // Hide the alert after 3 seconds
+      setTimeout(() => {
+        this.showAlert = false;
+      }, 3000);
+    },
+    
+    async handleConfirm() {
       if (!this.date || !this.time || !this.phone) {
-        this.$toast.error("Please fill in all required fields");
+        this.showNotification("Please fill in all required fields", "danger");
         return;
       }
 
-      this.$toast.success(`${this.item.name} service booked successfully!`, {
-        description: `Your appointment has been scheduled for ${format(this.date, "dd-MM-yyyy")} at ${this.time}.`,
-      });
+      try {
+        this.loading = true;
+        const response = await fetch('/request-service', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authentication-Token': localStorage.getItem('token')
+          },
+          body: JSON.stringify({
+            package_id: this.item.id,
+            date: this.date,
+            time: this.time,
+            phone: this.phone
+          })
+        });
 
-      // Reset form
-      this.time = "19:00";
-      this.phone = "";
-      this.onClose();
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Failed to book service');
+        }
+
+        this.showNotification(`${this.item.name} service booked successfully!`, "success");
+
+        // Reset form and close modal after a short delay
+        setTimeout(() => {
+          this.time = "19:00";
+          this.phone = "";
+          this.onClose();
+        }, 1500);
+      } catch (error) {
+        this.showNotification(error.message || 'An error occurred while booking', "danger");
+        console.error('Booking error:', error);
+      } finally {
+        this.loading = false;
+      }
     }
   },
   template: `
-    <div v-if="isOpen" class="fixed inset-0 z-50 flex items-center justify-center">
-      <div class="absolute inset-0 bg-black bg-opacity-80" @click="onClose"></div>
-      <div class="relative bg-white rounded-lg max-w-md w-full mx-4 overflow-hidden">
-        <div class="p-4 border-b">
-          <h2 class="text-xl font-medium">Book Service</h2>
-        </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-4">
-          <!-- Service info section -->
-          <div class="bg-orange-50 rounded-xl p-4">
-            <div class="bg-orange-100 text-orange-800 py-1 px-3 rounded-full text-sm inline-block mb-2">
-              {{ item.name }}
-            </div>
-            <h3 class="text-xl font-semibold flex items-center gap-1">
-              {{ item.provider || 'Service Provider' }}
-              <span class="text-gray-400 text-xs">✏️</span>
-            </h3>
-            <p class="text-gray-500 text-sm">Regular Service</p>
-            
-            <div class="flex items-center gap-1 my-2">
-              <span class="text-yellow-500">★</span>
-              <span class="text-gray-500 text-sm">
-                {{ item.rating ? \`\${item.rating} (\${item.reviews} reviews)\` : 'Unrated (0 reviews)' }}
-              </span>
+    <div v-if="isOpen" class="modal d-block" tabindex="-1" role="dialog" style="z-index: 1050;">
+      <div class="modal-dialog modal-dialog-centered" role="document" style="z-index: 1055;">
+        <div class="modal-content bg-dark text-white border border-secondary" @click.stop>
+          <div class="modal-header border-secondary">
+            <h5 class="modal-title">Book Service</h5>
+            <button type="button" class="btn-close btn-close-white" @click="onClose"></button>
+          </div>
+          
+          <div class="modal-body">
+            <!-- Alert message -->
+            <div v-if="showAlert" :class="'alert alert-' + alertType" role="alert">
+              {{ alertMessage }}
             </div>
             
-            <div class="text-2xl font-bold mt-2">
-              ₹{{ item.price.toFixed(1) }} <span class="text-gray-400 text-sm font-normal">/-</span>
-            </div>
-            
-            <div class="flex gap-2 mt-4">
-              <div class="bg-orange-100 text-orange-800 py-1 px-3 rounded-full text-sm">
-                {{ item.experience || '1-3 yrs xp' }}
+            <div class="row">
+              <!-- Service info section -->
+              <div class="col-md-6 mb-3">
+                <div class="p-3 bg-dark border border-secondary rounded">
+                  <div class="badge bg-secondary mb-2">
+                    {{ item.name }}
+                  </div>
+                  <h5 class="fw-bold">{{ item.provider || 'Service Provider' }}</h5>
+                  <p class="text-muted small">Regular Service</p>
+                  
+                  <div class="d-flex align-items-center mb-2">
+                    <span class="text-warning me-1"><i class="fas fa-star"></i></span>
+                    <span class="small">
+                      {{ item.rating ? \`\${item.rating} (\${item.reviews} reviews)\` : 'Unrated (0 reviews)' }}
+                    </span>
+                  </div>
+                  
+                  <div class="fs-4 fw-bold mt-2">
+                    ₹{{ item.price }} <span class="text-muted small">/-</span>
+                  </div>
+                  
+                  <div class="mt-3">
+                    <span class="badge bg-secondary me-2">{{ item.experience || '1-3 yrs xp' }}</span>
+                  </div>
+                </div>
               </div>
-              <button class="bg-orange-50 border border-orange-200 text-orange-800 py-1 px-3 rounded-full text-sm">
-                Save
-              </button>
+
+              <!-- Booking form section -->
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Time</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-dark text-white border-secondary">
+                      <i class="fas fa-clock"></i>
+                    </span>
+                    <input 
+                      type="time" 
+                      v-model="time" 
+                      class="form-control bg-dark text-white border-secondary"
+                    />
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">Date</label>
+                  <input 
+                    type="date" 
+                    v-model="date" 
+                    class="form-control bg-dark text-white border-secondary"
+                    :min="today"
+                  />
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">Phone Number</label>
+                  <input
+                    type="tel"
+                    v-model="phone"
+                    placeholder="Your phone number"
+                    class="form-control bg-dark text-white border-secondary"
+                  />
+                </div>
+              </div>
             </div>
           </div>
-
-          <!-- Booking form section -->
-          <div class="space-y-4">
-            <div>
-              <label class="block mb-1 text-sm font-medium">Time</label>
-              <div class="relative">
-                <input 
-                  type="time" 
-                  v-model="time" 
-                  class="w-full p-2 pl-10 border rounded-md"
-                />
-                <span class="absolute left-3 top-3 text-gray-500">
-                  <i class="fas fa-clock"></i>
-                </span>
-              </div>
-            </div>
-
-            <div>
-              <label class="block mb-1 text-sm font-medium">Date</label>
-              <input 
-                type="date" 
-                v-model="date" 
-                class="w-full p-2 border rounded-md"
-                :min="today"
-              />
-            </div>
-
-            <div>
-              <label class="block mb-1 text-sm font-medium">Phone Number</label>
-              <input
-                type="tel"
-                v-model="phone"
-                placeholder="Your phone number"
-                class="w-full p-2 border rounded-md"
-              />
-            </div>
-
+          
+          <div class="modal-footer border-secondary">
             <button 
               @click="handleConfirm"
-              class="w-full bg-gray-800 hover:bg-gray-900 text-white py-2 rounded-md"
+              class="btn btn-primary w-100"
+              :disabled="loading"
             >
-              Confirm
-            </button>
-
-            <button 
-              class="w-full text-center text-orange-500 font-medium text-sm py-2"
-              @click="onClose"
-            >
-              Reviews
+              <span v-if="loading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+              {{ loading ? 'Processing...' : 'Confirm Booking' }}
             </button>
           </div>
         </div>
       </div>
+      <div class="modal-backdrop show" style="z-index: 1040;"></div>
     </div>
   `
 }

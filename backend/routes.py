@@ -2,8 +2,10 @@ from flask import request, jsonify, render_template, current_app
 from flask_security import auth_required, verify_password, hash_password, current_user
 from backend.models import db, User, Service, Professional, ServicePackage, ServiceRequest, Review
 from werkzeug.utils import secure_filename
+from werkzeug.security import check_password_hash
 import os
-import datetime
+from datetime import datetime
+
 
 def register_routes(app):
     @app.get('/')
@@ -244,15 +246,52 @@ def register_routes(app):
             'professional_name': package.professional.user.full_name if package.professional and package.professional.user else None
         } for package in packages]), 200
     
+    # @app.route('/request-service', methods=['POST'])
+    # @auth_required()
+    # def request_service():
+    #     """Create a new service request"""
+    #     data = request.get_json()
+    #     package_id = data.get('package_id')
+        
+    #     if not package_id:
+    #         return jsonify({'message': 'Package ID is required'}), 400
+            
+    #     package = ServicePackage.query.get(package_id)
+    #     if not package:
+    #         return jsonify({'message': 'Service package not found'}), 404
+            
+    #     try:
+    #         service_request = ServiceRequest(
+    #             customer_id=current_user.id,
+    #             package_id=package_id,
+    #             professional_id=package.professional_id,
+    #             status='requested'
+    #         )
+    #         db.session.add(service_request)
+    #         db.session.commit()
+            
+    #         return jsonify({
+    #             'message': 'Service requested successfully',
+    #             'request_id': service_request.id
+    #         }), 201
+            
+    #     except Exception as e:
+    #         db.session.rollback()
+    #         return jsonify({'message': f'Error creating service request: {str(e)}'}), 500
+
+
+
     @app.route('/request-service', methods=['POST'])
     @auth_required()
     def request_service():
-        """Create a new service request"""
         data = request.get_json()
         package_id = data.get('package_id')
+        date = data.get('date')
+        time = data.get('time')
+        phone = data.get('phone')
         
-        if not package_id:
-            return jsonify({'message': 'Package ID is required'}), 400
+        if not all([package_id, date, time, phone]):
+            return jsonify({'message': 'All fields are required'}), 400
             
         package = ServicePackage.query.get(package_id)
         if not package:
@@ -263,7 +302,8 @@ def register_routes(app):
                 customer_id=current_user.id,
                 package_id=package_id,
                 professional_id=package.professional_id,
-                status='requested'
+                status='requested',
+                date_of_request=datetime.strptime(f"{date} {time}", "%Y-%m-%d %H:%M")
             )
             db.session.add(service_request)
             db.session.commit()
@@ -276,6 +316,7 @@ def register_routes(app):
         except Exception as e:
             db.session.rollback()
             return jsonify({'message': f'Error creating service request: {str(e)}'}), 500
+
     
     @app.route('/my-requests', methods=['GET'])
     @auth_required()
@@ -302,8 +343,10 @@ def register_routes(app):
             'status': req.status,
             'date_of_request': req.date_of_request.strftime('%Y-%m-%d %H:%M:%S'),
             'date_of_completion': req.date_of_completion.strftime('%Y-%m-%d %H:%M:%S') if req.date_of_completion else None,
-            'remarks': req.remarks
+            'remarks': req.remarks,
+            'professional_name': req.professional.user.full_name if req.professional and req.professional.user else None
         } for req in requests]), 200
+
     
     @app.route('/update-request/<int:request_id>', methods=['PUT'])
     @auth_required()

@@ -61,9 +61,7 @@ def initialize_database(app, db):
                 Service(name="Cooking", base_price=30.0, description="Normal Cooking Service", category="normal"),
                 Service(name="Repairs", base_price=30.0, description="Repairing Service", category="normal"),          
                 Service(name="Electrical", base_price=100.0, description="Normal Electrical Service", category="normal"),               
-                Service(name="Laundry", base_price=50.0, description="Laundry Service", category="normal"),
-                Service(name="Emergency Repairs", base_price=50.0, description="Emergency Repair Service", category="emergency"),
-                Service(name="Premium Cleaning", base_price=50.0, description="Premium Cleaning Service", category="platinum")            
+                Service(name="Laundry", base_price=50.0, description="Laundry Service", category="normal"),     
             ]
             db.session.bulk_save_objects(services)
             db.session.commit()
