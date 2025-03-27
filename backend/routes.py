@@ -246,41 +246,7 @@ def register_routes(app):
             'professional_name': package.professional.user.full_name if package.professional and package.professional.user else None
         } for package in packages]), 200
     
-    # @app.route('/request-service', methods=['POST'])
-    # @auth_required()
-    # def request_service():
-    #     """Create a new service request"""
-    #     data = request.get_json()
-    #     package_id = data.get('package_id')
-        
-    #     if not package_id:
-    #         return jsonify({'message': 'Package ID is required'}), 400
-            
-    #     package = ServicePackage.query.get(package_id)
-    #     if not package:
-    #         return jsonify({'message': 'Service package not found'}), 404
-            
-    #     try:
-    #         service_request = ServiceRequest(
-    #             customer_id=current_user.id,
-    #             package_id=package_id,
-    #             professional_id=package.professional_id,
-    #             status='requested'
-    #         )
-    #         db.session.add(service_request)
-    #         db.session.commit()
-            
-    #         return jsonify({
-    #             'message': 'Service requested successfully',
-    #             'request_id': service_request.id
-    #         }), 201
-            
-    #     except Exception as e:
-    #         db.session.rollback()
-    #         return jsonify({'message': f'Error creating service request: {str(e)}'}), 500
-
-
-
+  
     @app.route('/request-service', methods=['POST'])
     @auth_required()
     def request_service():
@@ -442,3 +408,100 @@ def register_routes(app):
         except Exception as e:
             db.session.rollback()
             return jsonify({'message': f'Error adding review: {str(e)}'}), 500
+
+
+    # Search Page implementation in Professional and Customer [Dynamically]
+
+    @app.route('/api/search/services', methods=['POST'])
+    @auth_required('token')
+    def search_services():
+        data = request.get_json()
+        query = ServicePackage.query.join(Service).join(Professional)
+
+        if data.get('search_text'):
+            query = query.filter(ServicePackage.name.ilike(f"%{data['search_text']}%") | 
+                                Service.name.ilike(f"%{data['search_text']}%"))
+
+        if data.get('pricef'):
+            price_range = data['pricef']
+            if price_range == '500':
+                query = query.filter(ServicePackage.price <= 500)
+            elif price_range == '1000':
+                query = query.filter(ServicePackage.price.between(500, 1000))
+            elif price_range == '1500':
+                query = query.filter(ServicePackage.price.between(1000, 1500))
+            elif price_range == 'max':
+                query = query.filter(ServicePackage.price > 1500)
+
+        if data.get('servicef'):
+            query = query.filter(Service.id == data['servicef'])
+
+        if data.get('xpf'):
+            query = query.filter(Professional.experience_years == data['xpf'])
+
+        results = query.all()
+        return jsonify({
+            'results': [{
+                'id': pkg.id,
+                'service': pkg.service.name,
+                'package': pkg.name,
+                'professional': pkg.professional.user.full_name,
+                'experience': pkg.professional.experience_years,
+                'price': pkg.price,
+                'phone': pkg.professional.user.phone_number,
+                'datetime': pkg.created_at.strftime('%Y-%m-%d %H:%M:%S')
+            } for pkg in results]
+        })
+
+    @app.route('/api/search/requests', methods=['POST'])
+    @auth_required('token')
+    def search_requests():
+        data = request.get_json()
+        query = ServiceRequest.query.join(ServicePackage).join(User, ServiceRequest.customer_id == User.id)
+
+        if data.get('search_text'):
+            query = query.filter(ServicePackage.name.ilike(f"%{data['search_text']}%") | 
+                                User.full_name.ilike(f"%{data['search_text']}%"))
+
+        if data.get('pkgs'):
+            query = query.filter(ServiceRequest.package_id == data['pkgs'])
+
+        if data.get('status'):
+            query = query.filter(ServiceRequest.status == data['status'])
+
+        if data.get('loc'):
+            query = query.filter(User.address.ilike(f"%{data['loc']}%"))
+
+        results = query.all()
+        return jsonify({
+            'results': [{
+                'id': req.id,
+                'package': req.package.name,
+                'customer': req.customer.full_name,
+                'phone': req.customer.phone_number,
+                'location': req.customer.address,
+                'pincode': req.customer.pincode,
+                'completion_date': req.date_of_completion.strftime('%Y-%m-%d %H:%M:%S') if req.date_of_completion else None,
+                'status': req.status
+            } for req in results]
+        })
+
+    @app.route('/api/service-requests/<int:request_id>/accept', methods=['PUT'])
+    @auth_required('token')
+    def accept_request(request_id):
+        request = ServiceRequest.query.get(request_id)
+        if not request:
+            return jsonify({'message': 'Request not found'}), 404
+        request.status = 'Accepted'
+        db.session.commit()
+        return jsonify({'message': 'Request accepted successfully'})
+
+    @app.route('/api/service-requests/<int:request_id>/close', methods=['PUT'])
+    @auth_required('token')
+    def close_request(request_id):
+        request = ServiceRequest.query.get(request_id)
+        if not request:
+            return jsonify({'message': 'Request not found'}), 404
+        request.status = 'Closed'
+        db.session.commit()
+        return jsonify({'message': 'Request closed successfully'})

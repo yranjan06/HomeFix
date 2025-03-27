@@ -1,5 +1,5 @@
 export default {
-    template:`
+  template: `
   <table>
     <thead>
       <tr>
@@ -16,10 +16,7 @@ export default {
       </tr>
     </tbody>
   </table>
-</template>
-
-<script>
-export default {
+  `,
   props: {
     headers: {
       type: Array,
@@ -29,22 +26,5 @@ export default {
       type: Array,
       required: true,
     },
-  },
-};
-</script>
-
-<style scoped>
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-th, td {
-  border: 1px solid #ddd;
-  padding: 8px;
-}
-th {
-  background-color: #f4f4f4;
-}
-</style>`
-
+  }
 }

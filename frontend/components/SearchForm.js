@@ -1,6 +1,5 @@
 export default {
-   
-template:`
+  template: `
   <form @submit.prevent="onSubmit">
     <div v-for="filter in filters" :key="filter.name" class="filter">
       <label :for="filter.name">{{ filter.label }}</label>
@@ -22,10 +21,7 @@ template:`
     <button type="button" @click="onReset">Reset</button>
     <button type="submit">Search</button>
   </form>
-</template>
-
-<script>
-export default {
+  `,
   props: {
     filters: {
       type: Array,
@@ -39,13 +35,5 @@ export default {
       type: Function,
       required: true,
     },
-  },
-};
-</script>
-
-<style scoped>
-.filter {
-  margin-bottom: 1rem;
-}
-</style>`
+  }
 }
