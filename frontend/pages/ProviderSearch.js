@@ -1,18 +1,63 @@
 export default {
-    template: `
-    <div class="container py-5">
-        <div class="card border-0 shadow-sm">
-            <div class="card-body p-4">
-                <h2 class="mb-4 fw-bold">ProviderSearchPage</h2>
-                <p>Welcome, ProviderSearchPage logged in.</p>
-                <div class="alert alert-dark">
-                    <div class="d-flex align-items-center">
-                        <div class="me-3">ℹ️</div>
-                        <div>ProviderSearchPage</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    `
+    template:`
+  <div>
+    <SearchForm :filters="filters" :onSubmit="handleSearch" :onReset="handleReset" />
+    <DataTable :headers="headers" :rows="rows">
+      <template #actions="{ row }">
+        <StatusBadge :status="row.status" />
+        <button v-if="row.status === 'Requested'" @click="accept(row)">Accept</button>
+        <button v-if="row.status === 'Completed'" @click="close(row)">Close</button>
+      </template>
+    </DataTable>
+  </div>
+</template>
+
+<script>
+import SearchForm from '@/components/SearchForm.vue';
+import DataTable from '@/components/DataTable.vue';
+import StatusBadge from '@/components/StatusBadge.vue';
+
+export default {
+  components: { SearchForm, DataTable, StatusBadge },
+  data() {
+    return {
+      filters: [
+        { type: 'text', name: 'search_text', label: 'Search', placeholder: 'Search text', value: '' },
+        { type: 'select', name: 'pkgs', label: 'Package', options: [
+          { value: '', label: 'Package' },
+        ], value: '' },
+        { type: 'select', name: 'status', label: 'Status', options: [
+          { value: '', label: 'Status' },
+          { value: 'Requested', label: 'Requested' },
+          { value: 'Accepted', label: 'Accepted' },
+          { value: 'Completed', label: 'Completed' },
+          { value: 'Closed', label: 'Closed' },
+        ], value: '' },
+        { type: 'select', name: 'loc', label: 'Location', options: [
+          { value: '', label: 'Location' },
+          { value: 'Delhi', label: 'Delhi' },
+          { value: 'Indore', label: 'Indore' },
+          { value: 'Bangalore', label: 'Bangalore' },
+        ], value: '' },
+      ],
+      headers: ['ID', 'Package', 'Customer', 'Phone', 'Location', 'Pincode', 'Completion Date', 'Status', 'Action'],
+      rows: [],
+    };
+  },
+  methods: {
+    handleSearch() {
+      console.log('Searching with filters:', this.filters);
+    },
+    handleReset() {
+      this.filters.forEach((filter) => (filter.value = ''));
+    },
+    accept(row) {
+      console.log('Accepting request for row:', row);
+    },
+    close(row) {
+      console.log('Closing request for row:', row);
+    },
+  },
+};
+</script>`
 }

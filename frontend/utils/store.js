@@ -1,29 +1,5 @@
+// 
 
-// const store = new Vuex.Store({
-//     state: {
-//         auth_token: null,
-//         role: null,
-//         loggedIn: false,
-//         user_id: null,
-//         user: null
-//     },
-//     mutations: {
-//         setUser(state, user) {
-//             state.auth_token = user.token;
-//             state.role = user.role;
-//             state.loggedIn = !!user.token;
-//             state.user_id = user.id;
-//             state.user = user;
-//         }
-//     },
-//     getters: {
-//         isLoggedIn: state => !!state.auth_token,
-//         currentUser: state => state.user,
-//         userRole: state => state.role
-//     }
-// });
-
-// export default store;
 
 
 const store = new Vuex.Store({
@@ -43,9 +19,9 @@ const store = new Vuex.Store({
             state.user = user;
             
             // Store in localStorage for persistence
-            localStorage.setItem('token', user.token);
-            localStorage.setItem('role', user.role);
-            localStorage.setItem('user_id', user.id);
+            if (user.token) localStorage.setItem('token', user.token);
+            if (user.role) localStorage.setItem('role', user.role);
+            if (user.id) localStorage.setItem('user_id', user.id);
             localStorage.setItem('user', JSON.stringify(user));
             
             // Store phone number if available
@@ -66,12 +42,51 @@ const store = new Vuex.Store({
             localStorage.removeItem('user_id');
             localStorage.removeItem('user');
             localStorage.removeItem('phone');
+        },
+        updateUserProfile(state, profileData) {
+            state.user = { ...state.user, ...profileData };
+            localStorage.setItem('user', JSON.stringify(state.user));
         }
     },
     getters: {
         isLoggedIn: state => !!state.auth_token,
         currentUser: state => state.user,
-        userRole: state => state.role
+        userRole: state => state.role,
+        getHomeRoute: state => {
+            const role = state.role;
+            if (role === 'admin') return '/admin-dashboard';
+            if (role === 'customer') return '/customer-dashboard';
+            if (role === 'service_provider') return '/provider-dashboard';
+            return '/login';
+        },
+        getSearchRoute: state => {
+            const role = state.role;
+            if (role === 'admin') return '/admin-search';
+            if (role === 'customer') return '/customer-search';
+            if (role === 'service_provider') return '/provider-search';
+            return '/login';
+        },
+        getSummaryRoute: state => {
+            const role = state.role;
+            if (role === 'admin') return '/admin-summary';
+            if (role === 'customer') return '/customer-summary';
+            if (role === 'service_provider') return '/provider-summary';
+            return '/login';
+        }
+    },
+    actions: {
+        login({ commit }, userData) {
+            return new Promise((resolve, reject) => {
+                // You would typically make an API call here
+                // For now, we'll just commit the user data
+                commit('setUser', userData);
+                resolve(userData);
+            });
+        },
+        logout({ commit }) {
+            commit('clearUser');
+            return Promise.resolve();
+        }
     }
 });
 
