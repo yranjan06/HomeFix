@@ -412,4 +412,53 @@ def register_routes(app):
 
     # Search Page implementation in Professional and Customer [Dynamically]
 
-    
+    @app.route('/search-services', methods=['GET'])
+    def search_services():
+        query = request.args.get('query', '')
+        location = request.args.get('location', '')
+        service_type = request.args.get('serviceType', '')
+        price_range = request.args.get('priceRange', '')
+        
+        # Start with all service packages
+        services = ServicePackage.query.join(Professional).join(Service)
+        
+        # Apply filters
+        if query:
+            services = services.filter(db.or_(
+                Service.name.ilike(f'%{query}%'),
+                ServicePackage.name.ilike(f'%{query}%'),
+                Professional.user.has(User.full_name.ilike(f'%{query}%'))
+            ))
+        
+        if location:
+            services = services.filter(Professional.user.has(User.address.ilike(f'%{location}%')))
+        
+        if service_type:
+            services = services.filter(Service.category == service_type)
+        
+        if price_range:
+            if price_range == 'low':
+                services = services.filter(ServicePackage.price < 100)
+            elif price_range == 'medium':
+                services = services.filter(ServicePackage.price.between(100, 200))
+            elif price_range == 'high':
+                services = services.filter(ServicePackage.price > 200)
+        
+        results = []
+        for s in services.all():
+            professional = s.professional
+            if professional and professional.user:
+                results.append({
+                    'id': s.id,
+                    'name': professional.user.full_name,
+                    'specialty': s.service.name,
+                    'rating': professional.rating,
+                    'reviews': len(professional.service_requests),
+                    'location': professional.user.address,
+                    'price': f'₹{s.price}',
+                    'priceValue': s.price,
+                    'availability': 'Today, 2:00 PM',  # You may implement real availability logic
+                    'serviceType': s.service.category
+                })
+        
+        return jsonify(results), 200
