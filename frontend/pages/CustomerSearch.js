@@ -107,7 +107,9 @@ export default {
   },
   template: `
   <div class="search-container bg-dark text-light p-4 w-75 mx-auto">
-      <h2 class="mb-4">Find Services</h2>
+      <div class="border border-secondary rounded p-2 mb-4 text-center" style="width: 300px;">
+        <h2 class="mb-0">Find Services</h2>
+      </div>
       
       <SearchBar 
           @search="handleSearch" 
@@ -156,7 +158,9 @@ export default {
       </div>
       
       <div v-else class="py-4">
-          <h3 class="bg-dark text-light py-2 px-3 rounded mb-3">Popular Categories</h3>
+          <div class="border border-secondary rounded p-2 mb-3 text-center" style="width: 300px;">
+            <h2 class="mb-0">Popular Categories</h2>
+          </div>
           <div class="row g-4">
               <div v-for="category in popularCategories" :key="category.id" class="col-6 col-md-4 col-lg-3">
                   <div class="card h-100 service-category-card bg-dark text-light border border-secondary" @click="searchByCategory(category.name)">
