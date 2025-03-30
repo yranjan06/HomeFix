@@ -1,86 +1,70 @@
 export default {
-    template:`
-  <div class="dashboard container-fluid py-4">
-    <h1 class="mb-4">QWIX Summary Dashboard</h1>
-    
-    <div class="row mb-4">
-      <div class="col-md-3" v-for="(metric, index) in metrics" :key="index">
-        <summary-metric :title="metric.title" :value="metric.value" :icon="metric.icon" :trend="metric.trend" />
-      </div>
+    template: `
+    <div class="dashboard container-fluid p-3 bg-dark text-light">
+        <div class="customer-welcome-card mt-2 ms-2 d-inline-block p-3 bg-dark border border-secondary rounded position-relative" style="left: -10px;">
+            <h3 class="text-light mb-0">Customer Statistics</h3>
+        </div>
+        
+        <div class="row g-3 mb-3 mt-4">
+            <div class="col-md-3 col-6" v-for="(metric, index) in metrics" :key="index">
+                <summary-metric :title="metric.title" :value="metric.value" :icon="metric.icon" :trend="metric.trend" />
+            </div>
+        </div>
+        
+        <div class="row g-3 mb-3">
+            <div class="col-md-8">
+                <summary-chart :monthly-usage="monthlyUsage" />
+            </div>
+            <div class="col-md-4">
+                <summary-card title="Recent Activities" :items="activities" />
+            </div>
+        </div>
+        
+        <div class="row g-3">
+            <div class="col-12">
+                <summary-table :items="recentRequests" />
+            </div>
+        </div>
     </div>
-    
-    <div class="row mb-4">
-      <div class="col-md-8">
-        <summary-chart :chart-data="chartData" />
-      </div>
-      <div class="col-md-4">
-        <summary-card title="Recent Activities" :items="activities" />
-      </div>
-    </div>
-    
-    <div class="row">
-      <div class="col-12">
-        <summary-table :items="tableData" />
-      </div>
-    </div>
-  </div>
-</template>
-
-<script>
-import SummaryMetric from '@/components/SummaryMetric.vue'
-import SummaryChart from '@/components/SummaryChart.vue'
-import SummaryCard from '@/components/SummaryCard.vue'
-import SummaryTable from '@/components/SummaryTable.vue'
-
-export default {
-  name: 'Dashboard',
-  components: {
-    SummaryMetric,
-    SummaryChart,
-    SummaryCard,
-    SummaryTable
-  },
-  data() {
-    return {
-      metrics: [
-        { title: 'Total Users', value: '2,845', icon: 'users', trend: 'up' },
-        { title: 'Revenue', value: '$12,350', icon: 'dollar-sign', trend: 'up' },
-        { title: 'Conversion', value: '3.2%', icon: 'percent', trend: 'down' },
-        { title: 'Active Sessions', value: '156', icon: 'activity', trend: 'up' }
-      ],
-      chartData: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-        datasets: [
-          {
-            label: 'Users',
-            backgroundColor: 'rgba(71, 183, 132, 0.5)',
-            data: [40, 39, 60, 75, 82, 95]
-          },
-          {
-            label: 'Revenue',
-            backgroundColor: 'rgba(114, 124, 245, 0.5)',
-            data: [20, 25, 30, 35, 43, 50]
-          }
-        ]
-      },
-      activities: [
-        { text: 'John updated dashboard', time: '5 min ago' },
-        { text: 'New user registered', time: '1 hour ago' },
-        { text: 'Server update completed', time: '2 hours ago' },
-        { text: 'Database backup created', time: '5 hours ago' },
-        { text: 'Weekly report generated', time: '1 day ago' }
-      ],
-      tableData: [
-        { id: 1, name: 'Project Alpha', status: 'Active', progress: 75, owner: 'John Doe' },
-        { id: 2, name: 'Project Beta', status: 'Pending', progress: 30, owner: 'Jane Smith' },
-        { id: 3, name: 'Project Gamma', status: 'Completed', progress: 100, owner: 'Mike Johnson' },
-        { id: 4, name: 'Project Delta', status: 'Active', progress: 45, owner: 'Sarah Williams' },
-        { id: 5, name: 'Project Epsilon', status: 'On Hold', progress: 60, owner: 'David Brown' }
-      ]
+    `,
+    name: 'CustomerSummary',
+    components: {
+        'summary-metric': () => import('../components/Customer_Components/SummaryMetric.js'),
+        'summary-chart': () => import('../components/Customer_Components/SummaryChart.js'),
+        'summary-card': () => import('../components/Customer_Components/SummaryCard.js'),
+        'summary-table': () => import('../components/Customer_Components/SummaryTable.js')
+    },
+    data() {
+        return {
+            metrics: [],
+            activities: [],
+            monthlyUsage: [],
+            recentRequests: []
+        }
+    },
+    mounted() {
+        this.fetchSummaryData();
+    },
+    methods: {
+        fetchSummaryData() {
+            fetch('/api/customer-summary', {
+                headers: {
+                    'Authentication-Token': this.$store.state.auth_token
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                this.metrics = [
+                    { title: 'Total Services', value: data.total_services.toString(), icon: 'users', trend: 'up' },
+                    { title: 'Amount Spent', value: `$${data.amount_spent}`, icon: 'dollar-sign', trend: 'up' },
+                    { title: 'Satisfaction', value: `${data.avg_satisfaction}/5`, icon: 'percent', trend: 'up' },
+                    { title: 'Pending Services', value: data.pending_services.toString(), icon: 'activity', trend: 'down' }
+                ];
+                this.activities = data.recent_activities;
+                this.monthlyUsage = data.monthly_usage;
+                this.recentRequests = data.recent_requests;
+            })
+            .catch(error => console.error('Error fetching summary data:', error));
+        }
     }
-  }
-}
-</script>
-
-    `
 }

@@ -1,7 +1,3 @@
-// 
-
-
-
 const store = new Vuex.Store({
     state: {
         auth_token: localStorage.getItem('token') || null,

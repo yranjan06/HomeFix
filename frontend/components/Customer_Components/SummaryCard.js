@@ -1,63 +1,24 @@
 export default {
-    template:`
-  <div class="card">
-    <div class="card-header">
-      <h5 class="card-title mb-0">Projects Status</h5>
+    template: `
+    <div class="card bg-dark border border-secondary rounded">
+        <div class="card-header border-bottom border-secondary">
+            <h5 class="card-title mb-0 text-light">{{ title }}</h5>
+        </div>
+        <div class="card-body">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item bg-transparent border-bottom border-secondary" v-for="(item, index) in items" :key="index">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-light">{{ item.text }}</span>
+                        <small class="text-muted ms-3">{{ item.time }}</small>
+                    </div>
+                </li>
+            </ul>
+        </div>
     </div>
-    <div class="card-body">
-      <div class="table-responsive">
-        <table class="table table-hover">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Status</th>
-              <th>Progress</th>
-              <th>Owner</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="item in items" :key="item.id">
-              <td>{{ item.id }}</td>
-              <td>{{ item.name }}</td>
-              <td>
-                <span :class="`badge bg-${getStatusColor(item.status)}`">{{ item.status }}</span>
-              </td>
-              <td>
-                <div class="progress">
-                  <div class="progress-bar" role="progressbar" :style="`width: ${item.progress}%`" 
-                       :aria-valuenow="item.progress" aria-valuemin="0" aria-valuemax="100">
-                    {{ item.progress }}%
-                  </div>
-                </div>
-              </td>
-              <td>{{ item.owner }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-</template>
-
-<script>
-export default {
-  name: 'SummaryTable',
-  props: {
-    items: Array
-  },
-  methods: {
-    getStatusColor(status) {
-      switch(status) {
-        case 'Active': return 'success';
-        case 'Pending': return 'warning';
-        case 'Completed': return 'info';
-        case 'On Hold': return 'secondary';
-        default: return 'primary';
-      }
+    `,
+    name: 'SummaryCard',
+    props: {
+        title: String,
+        items: Array
     }
-  }
-}
-</script>`
-
 }

@@ -2,9 +2,11 @@ from flask import request, jsonify, render_template, current_app
 from flask_security import auth_required, verify_password, hash_password, current_user
 from backend.models import db, User, Service, Professional, ServicePackage, ServiceRequest, Review
 from werkzeug.utils import secure_filename
+from sqlalchemy.sql import func
 from werkzeug.security import check_password_hash
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
+
 
 
 def register_routes(app):
@@ -462,3 +464,60 @@ def register_routes(app):
                 })
         
         return jsonify(results), 200
+    
+
+
+
+     # Customer Summery Dashbord 
+
+
+
+    @app.route('/api/customer-summary', methods=['GET'])
+    @auth_required()
+    def get_customer_summary():
+        if current_user.roles[0].name != 'customer':
+            return jsonify({'error': 'Unauthorized'}), 403
+
+        # Get total services used
+        total_services = ServiceRequest.query.filter_by(customer_id=current_user.id).count()
+
+        # Get amount spent
+        amount_spent = db.session.query(func.sum(ServicePackage.price)).join(ServiceRequest).filter(ServiceRequest.customer_id == current_user.id).scalar() or 0
+
+        # Get average satisfaction
+        avg_satisfaction = db.session.query(func.avg(Review.rating)).join(ServiceRequest).filter(ServiceRequest.customer_id == current_user.id).scalar() or 0
+
+        # Get pending services
+        pending_services = ServiceRequest.query.filter_by(customer_id=current_user.id, status='requested').count()
+
+        # Get recent activities
+        recent_activities = ServiceRequest.query.filter_by(customer_id=current_user.id).order_by(ServiceRequest.date_of_request.desc()).limit(5).all()
+
+        # Get monthly service usage
+        six_months_ago = datetime.now() - timedelta(days=180)
+        monthly_usage = db.session.query(
+            func.strftime('%Y-%m', ServiceRequest.date_of_request).label('month'),
+            func.count().label('count')
+        ).filter(
+            ServiceRequest.customer_id == current_user.id,
+            ServiceRequest.date_of_request >= six_months_ago
+        ).group_by('month').order_by('month').all()
+
+        # Get recent service requests
+        recent_requests = ServiceRequest.query.filter_by(customer_id=current_user.id).order_by(ServiceRequest.date_of_request.desc()).limit(5).all()
+
+        return jsonify({
+            'total_services': total_services,
+            'amount_spent': round(amount_spent, 2),
+            'avg_satisfaction': round(avg_satisfaction, 1) if avg_satisfaction else 0,
+            'pending_services': pending_services,
+            'recent_activities': [{'text': f"{req.package.service.name} service {req.status}", 'time': req.date_of_request.strftime('%Y-%m-%d')} for req in recent_activities],
+            'monthly_usage': [{'month': item.month, 'count': item.count} for item in monthly_usage],
+            'recent_requests': [{
+                'id': req.id,
+                'service_name': req.package.service.name,
+                'status': req.status,
+                'date': req.date_of_request.strftime('%Y-%m-%d'),
+                'professional_name': req.professional.user.full_name if req.professional else 'Not Assigned'
+            } for req in recent_requests]
+        })

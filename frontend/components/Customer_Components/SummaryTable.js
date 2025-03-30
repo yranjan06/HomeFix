@@ -1,63 +1,50 @@
-export default{
-    template:`
-  <div class="card">
-    <div class="card-header">
-      <h5 class="card-title mb-0">Projects Status</h5>
-    </div>
-    <div class="card-body">
-      <div class="table-responsive">
-        <table class="table table-hover">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Status</th>
-              <th>Progress</th>
-              <th>Owner</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="item in items" :key="item.id">
-              <td>{{ item.id }}</td>
-              <td>{{ item.name }}</td>
-              <td>
-                <span :class="`badge bg-${getStatusColor(item.status)}`">{{ item.status }}</span>
-              </td>
-              <td>
-                <div class="progress">
-                  <div class="progress-bar" role="progressbar" :style="`width: ${item.progress}%`" 
-                       :aria-valuenow="item.progress" aria-valuemin="0" aria-valuemax="100">
-                    {{ item.progress }}%
-                  </div>
-                </div>
-              </td>
-              <td>{{ item.owner }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-</template>
-
-<script>
 export default {
-  name: 'SummaryTable',
-  props: {
-    items: Array
-  },
-  methods: {
-    getStatusColor(status) {
-      switch(status) {
-        case 'Active': return 'success';
-        case 'Pending': return 'warning';
-        case 'Completed': return 'info';
-        case 'On Hold': return 'secondary';
-        default: return 'primary';
-      }
+    template: `
+    <div class="card bg-dark border border-secondary rounded">
+        <div class="card-header border-bottom border-secondary">
+            <h5 class="card-title mb-0 text-light">Recent Service Requests</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover table-dark">
+                    <thead>
+                        <tr>
+                            <th class="text-light">ID</th>
+                            <th class="text-light">Service</th>
+                            <th class="text-light">Status</th>
+                            <th class="text-light">Date</th>
+                            <th class="text-light">Professional</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="item in items" :key="item.id">
+                            <td class="text-light">{{ item.id }}</td>
+                            <td class="text-light">{{ item.service_name }}</td>
+                            <td>
+                                <span :class="'badge bg-' + getStatusColor(item.status)">{{ item.status }}</span>
+                            </td>
+                            <td class="text-light">{{ item.date }}</td>
+                            <td class="text-light">{{ item.professional_name }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    `,
+    name: 'SummaryTable',
+    props: {
+        items: Array
+    },
+    methods: {
+        getStatusColor(status) {
+            switch(status) {
+                case 'completed': return 'success';
+                case 'requested': return 'warning';
+                case 'accepted': return 'info';
+                case 'closed': return 'secondary';
+                default: return 'primary';
+            }
+        }
     }
-  }
-}
-</script>`
-
 }
